@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Card, Form, Button } from "react-bootstrap";
+import { Card, Form, Button, Modal } from "react-bootstrap";
 import { useHistory } from "react-router";
+import cautionIMG from "../../assets/svg/error.svg";
+import services from "../../process/services";
 import color from "../../utility/color.js";
 
 const Login = (props) => {
   const history = useHistory();
 
+  const [isError, setIsError] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,13 +18,29 @@ const Login = (props) => {
     event.preventDefault();
     if (!isProses) {
       setIsProses(true);
-      console.log(`username : ${username}`);
-      console.log(`username : ${password}`);
-      if (props.login === "user") {
-        history.push("/");
-      } else {
-        history.push("/admin");
-      }
+      const typeLogin = props.login === "user" ? "userLabel" : "admin";
+      services
+        .login(typeLogin, {
+          username,
+          password,
+        })
+        .then((result) => {
+          if (result.data.data.length === 0) {
+            setIsError(true);
+            return;
+          }
+          if (props.login === "user") {
+            localStorage.setItem("userWebLabel", result.data.data[0].id);
+            history.push("/");
+          } else {
+            localStorage.setItem("adminWebLabel", result.data.data[0].id);
+            history.push("/admin");
+          }
+        })
+        .catch(() => {
+          setIsError(true);
+        });
+
       setIsProses(false);
     }
   };
@@ -43,7 +62,9 @@ const Login = (props) => {
           paddingRight: 20,
         }}
       >
-        <Card.Title>Login Admin</Card.Title>
+        <Card.Title>
+          Login {props.login === "user" ? "User" : "Admin"}
+        </Card.Title>
         <Card.Body>
           <Form>
             <Form.Group className="mb-3">
@@ -86,6 +107,45 @@ const Login = (props) => {
             >
               {isProses ? "Loading" : "Login"}
             </Button>
+            <Modal show={isError} onHide={() => setIsError(false)}>
+              <Modal.Body>
+                <div className="row">
+                  <div className="col-md-4" />
+                  <img
+                    src={cautionIMG}
+                    alt="img-not-found"
+                    className="p-2 col-md-4"
+                    // width="100%"
+                    // height="auto"
+                  />
+                  <div className="col-md-4" />
+                </div>
+                <p
+                  style={{
+                    textAlign: "center",
+                    padding: 10,
+                  }}
+                >
+                  Terjadi kesalahan, periksa kembali username dan password anda
+                </p>
+                <div className="row">
+                  <div className="col-md-4" />
+                  <button
+                    className="btn col-md-4"
+                    style={{
+                      boxShadow: "none",
+                      outline: 0,
+                      backgroundColor: color.red,
+                      color: color.gray,
+                    }}
+                    onClick={() => setIsError(false)}
+                  >
+                    Coba Lagi
+                  </button>
+                  <div className="col-md-4" />
+                </div>
+              </Modal.Body>
+            </Modal>
           </Form>
         </Card.Body>
       </Card>

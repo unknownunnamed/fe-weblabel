@@ -1,18 +1,38 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
-import { Form } from "react-bootstrap";
 import { useHistory } from "react-router";
-import berita from "../../dummy/berita";
-import title from "../../dummy/title";
+import { useRecoilValue } from "recoil";
+import services from "../../process/services";
+import atom from "../../state";
 import color from "../../utility/color";
+import DataNull from "./dataNull";
+import NotNull from "./notNull";
 
 const Home = () => {
-
   const history = useHistory();
 
   const handleLogout = () => {
-      history.push('/login');
-  }
+    localStorage.removeItem("userWebLabel");
+    history.push("/login");
+  };
+
+  const counter = useRecoilValue(atom.beritaCounter);
+
+  const [data, setData] = useState(null);
+
+  const getBerita = useCallback(async (id) => {
+    const berita = await services.getBeritaLabel(id);
+    setData(berita.data.data);
+  }, []);
+
+  useEffect(() => {
+    const user = localStorage.getItem("userWebLabel") ?? 0;
+    console.log(user);
+    if (user === 0) {
+      history.push("/login");
+    }
+    if (counter >= 0) getBerita(user);
+  }, [counter, getBerita, history]);
 
   return (
     <Fragment>
@@ -39,30 +59,7 @@ const Home = () => {
           </span>
         </div>
       </div>
-      <div className="container py-2">
-        <div className="container py-3 card" style={{ textAlign: "left" }}>
-          <h3 className="pb-2">{title}</h3>
-          <p style={{ textAlign: "justify" }}>{berita}</p>
-          <Form>
-            <Form.Group>
-              <Form.Select>
-                <option disabled>- Pilih kelas berita -</option>
-                <option value="Clickbait">Clickbait</option>
-                <option value="Bukan Clickbait">Bukan Clickbait</option>
-              </Form.Select>
-            </Form.Group>
-            <button
-              className="btn col-md-12 mt-3"
-              style={{
-                backgroundColor: color.red,
-                color: color.white,
-              }}
-            >
-              Submit
-            </button>
-          </Form>
-        </div>
-      </div>
+      {data ? <NotNull data={data} /> : <DataNull />}
     </Fragment>
   );
 };

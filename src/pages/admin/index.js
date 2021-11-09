@@ -1,6 +1,9 @@
 import {
   faHome,
   faSignOutAlt,
+  faTable,
+  faTags,
+  faUser
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
@@ -12,21 +15,24 @@ import {
 } from "react-router-dom";
 import { Link } from "react-router-dom";
 import NotFound from "../notfound";
+import Berita from "./berita";
 import Dashboard from "./dashboard";
+import Label from "./label";
 import "./style.css";
+import UserLabel from "./userLabel";
 
 const Admin = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const user = localStorage.getItem("admin-weblabel") ?? 0;
+    const user = localStorage.getItem("adminWebLabel") ?? 0;
     if (user === 0) {
       history.push("../login-admin");
     }
   });
 
   const HandleLogout = () => {
-    localStorage.removeItem("admin-weblabel");
+    localStorage.removeItem("adminWebLabel");
     history.push("../login-admin");
   };
 
@@ -36,6 +42,24 @@ const Admin = () => {
       link: "/",
       route: <Dashboard />,
       icon: faHome,
+    },
+    {
+      name: "Berita",
+      link: "/berita",
+      route: <Berita />,
+      icon: faTable,
+    },
+    {
+      name: "Label",
+      link: "/label",
+      route: <Label />,
+      icon: faTags,
+    },
+    {
+      name: "User Label",
+      link: "/userlabel",
+      route: <UserLabel />,
+      icon: faUser,
     }
   ];
 
