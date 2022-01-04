@@ -2,7 +2,7 @@ import http from "../utility/http-commons";
 
 const login = (typeLogin, data) => http.post(`/${typeLogin}/login`, data);
 
-const getBeritaUser = (id) => http.get(`//berita/label/${id}`);
+const getBeritaUser = (id) => http.get(`/berita/label/${id}`);
 
 const getBerita = () => http.get('/berita');
 

@@ -14,13 +14,13 @@ const TambahBeritaExcel = () => {
   const [counter, setCounter] = useRecoilState(atom.beritaCounter);
 
   const [fileExcel, setFileExcel] = useState();
-  //   const [sumberBerita, setSumberBerita] = useState("");
-  //   const idAdmin = localStorage.getItem("user") ?? 0;
+  const [jumlahData, setJumlahData] = useState(0);
 
   const handleAddBerita = async () => {
     setIsProses(true);
     const data = new FormData();
     data.append("fileExcel", fileExcel);
+    data.append("jumlahData", jumlahData !== "" ? jumlahData : 0);
     // data.append("sumberBerita", sumberBerita);
     // data.append("idAdmin", idAdmin);
     await services
@@ -77,6 +77,21 @@ const TambahBeritaExcel = () => {
                 }}
                 onChange={(value) => {
                   setFileExcel(value.target.files[0]);
+                }}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Jumlah data yang dimasukkan"
+                style={{
+                  borderColor: color.black,
+                  opacity: 0.5,
+                  outline: 0,
+                  boxShadow: "none",
+                }}
+                onChange={(value) => {
+                  setJumlahData(value.target.value);
                 }}
               />
             </Form.Group>
